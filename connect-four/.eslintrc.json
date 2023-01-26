@@ -27,7 +27,7 @@
     "eqeqeq": ["error", "always"],
     "curly": "error",
     "semi": "off",
-    "react-hooks/exhaustive-deps": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "no-console": "warn",
     "constructor-super": "error",
     "for-direction": "error",

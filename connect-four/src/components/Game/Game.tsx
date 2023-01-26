@@ -1,7 +1,13 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { GameContext } from '../providers'
 import { Slot } from './Slot'
 
 export const Game = (): JSX.Element => {
+  const gameContext = useContext(GameContext)
+
+  // eslint-disable-next-line
+  console.log('game data: ', gameContext.game)
+
   return (
     <div id="game">
       <div style={{ position: 'absolute' }}>
