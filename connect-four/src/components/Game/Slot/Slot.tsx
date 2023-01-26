@@ -8,29 +8,25 @@ interface Props {
   col: number
 }
 
-export const Slot = ({ row, col }: Props): JSX.Element => {
+export const Slot = (props: Props): JSX.Element => {
   const gameContext = useContext(GameContext)
   const [chip, setChip] = useState<ChipColors | undefined>()
 
-  // TODO: onClick of Slot component should trigger gameContext.PlayerMove(), which will change chip color based on
-  // turn being odd or even.
+  const { playerOne, playerTwo } = gameContext.game
+
+  const filled = (row: number, col: number): boolean =>
+    (playerOne.row.includes(row) && playerOne.col.includes(col)) ||
+    (playerTwo.row.includes(row) && playerTwo.col.includes(col))
+
+  const handleClick = () => {
+    gameContext.playerMove?.(props.row, props.col)
+    setChip(!(gameContext.turn % 2) ? ChipColors.YELLOW : ChipColors.RED)
+  }
 
   return (
-    <div
-      id="slot"
-      style={styles.slot}
-      onClick={() => {
-        setChip(
-          !(gameContext.game.turn % 2) ? ChipColors.YELLOW : ChipColors.RED
-        )
-        gameContext.playerMove?.(row, col)
-      }}
-    >
+    <div id="slot" style={styles.slot} onClick={handleClick}>
       <div id="hole-punch" style={styles.holePunch}>
-        {/* row-{_props.row}, col-{_props.col} */}
-
-        {/* <Chip color={props?.chip} /> */}
-        <Chip color={chip} />
+        <Chip color={filled(props.row, props.col) ? chip : undefined} />
       </div>
     </div>
   )

@@ -1,22 +1,17 @@
-import React, { useContext } from 'react'
-import { GameContext } from '../providers'
+import { CSSProperties } from 'react'
+
 import { Slot } from './Slot'
 
 export const Game = (): JSX.Element => {
-  const gameContext = useContext(GameContext)
-
-  // eslint-disable-next-line
-  console.log('game data: ', gameContext.game)
-
   return (
     <div id="game">
       <div style={{ position: 'absolute' }}>
         <div style={{ display: 'flex', flexDirection: 'column-reverse' }}>
-          {[...Array(6)].map((_, row) => (
-            <div style={styles.flex} key={row}>
-              {[...Array(7)].map((_, col) => (
-                <div key={`${row}-${col}`}>
-                  <Slot row={row} col={col} />
+          {[...Array(6)].map((_, rowIndex) => (
+            <div style={styles.flex} key={rowIndex}>
+              {[...Array(7)].map((_, colIndex) => (
+                <div key={`${rowIndex}-${colIndex}`}>
+                  <Slot row={rowIndex} col={colIndex} />
                 </div>
               ))}
             </div>
@@ -27,7 +22,7 @@ export const Game = (): JSX.Element => {
   )
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, CSSProperties> = {
   flex: {
     display: 'flex',
     flexDirection: 'row',

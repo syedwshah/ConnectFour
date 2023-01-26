@@ -1,19 +1,20 @@
-import { createContext, ReactNode, useCallback, useMemo, useState } from 'react'
+import { createContext, ReactNode, useCallback, useState } from 'react'
 
-export const defaultGame: Game = {
-  turn: 0,
-  playerOne: [],
-  playerTwo: [],
+const defaultGame: Game = {
+  playerOne: { row: [], col: [] },
+  playerTwo: { row: [], col: [] },
 }
 
 export interface GameContextType {
   game: Game
+  turn: number
   newGame?: () => void
   playerMove?: (newRow: number, newCol: number) => void
 }
 
 const GameContext = createContext<GameContextType>({
   game: defaultGame,
+  turn: 0,
 })
 
 interface Props {
@@ -23,47 +24,60 @@ interface Props {
 const GameProvider = ({ children }: Props): JSX.Element => {
   const { Provider } = GameContext
 
+  const [turn, setTurn] = useState(0)
   const [game, setGame] = useState<Game>(defaultGame)
 
-  const newGame = useCallback(() => defaultGame, [])
+  // TODO: newGame
+  // const newGame = useCallback(() => defaultGame, [])
 
   const playerMove = useCallback(
     (newRow: number, newCol: number) => {
+      const { playerOne, playerTwo } = game
+
       // TODO(1): Chips should fall from column down to existing chip column
       // TODO(2): Prevent chip being placeed on existing Point
-      if (!(game.turn % 2)) {
+
+      const slotTaken =
+        (playerOne.row.includes(newRow) && playerOne.col.includes(newCol)) ||
+        (playerTwo.row.includes(newRow) && playerTwo.col.includes(newCol))
+
+      const player = !(turn % 2) ? 'playerOne' : 'playerTwo'
+
+      if (!slotTaken) {
         setGame({
           ...game,
-          turn: game.turn + 1,
-          playerOne: [...game.playerOne, [newRow, newCol]],
+          [player]: {
+            row: [...game[player].row, newRow],
+            col: [...game[player].col, newCol],
+          },
         })
+        setTurn(turn + 1)
       } else {
+        //TODO: make sure there is still a row available
         setGame({
           ...game,
-          turn: game.turn + 1,
-          playerTwo: [...game.playerTwo, [newRow, newCol]],
+          [player]: {
+            row: [...game[player].row, newRow + 1],
+            col: [...game[player].col, newCol],
+          },
         })
+        setTurn(turn + 1)
       }
     },
-    [game, setGame]
+    [game, turn, setTurn, setGame]
   )
 
-  const gameData = useMemo(() => game, [game])
-
-  const contextValue = useMemo(
-    () => ({ game: gameData, newGame, playerMove }),
-    [gameData, newGame, playerMove]
-  )
-
-  return <Provider value={contextValue}>{children}</Provider>
+  return <Provider value={{ game, playerMove, turn }}>{children}</Provider>
 }
 
-type Point = [row: number, col: number]
+interface Position {
+  row: number[]
+  col: number[]
+}
 
 type Game = {
-  turn: number
-  playerOne: Point[]
-  playerTwo: Point[]
+  playerOne: Position
+  playerTwo: Position
 }
 
 export { GameContext, GameProvider }
