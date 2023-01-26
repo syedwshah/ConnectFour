@@ -13,14 +13,12 @@ export const defaultGame: Game = {
 
 export interface GameContextType {
   game: Game
-  newGame: () => void
-  playerMove: () => void
+  newGame?: () => void
+  playerMove?: () => void
 }
 
 const GameContext = createContext<GameContextType>({
   game: defaultGame,
-  newGame: () => undefined,
-  playerMove: () => undefined,
 })
 
 interface Props {
@@ -34,11 +32,7 @@ const GameProvider = ({ children }: Props): JSX.Element => {
   const newGame = () => undefined
   const playerMove = () => undefined
 
-  return (
-    <Provider value={{ game: defaultGame, newGame, playerMove }}>
-      {children}
-    </Provider>
-  )
+  return <Provider value={{ game: defaultGame, newGame }}>{children}</Provider>
 }
 
 export { GameContext, GameProvider }
