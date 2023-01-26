@@ -1,17 +1,19 @@
 import React from 'react'
-import { Chip } from '../Chip'
+
+import { Chip, ChipColors } from '../Chip'
 
 interface Props {
   row?: number
   col?: number
+  chip?: ChipColors
 }
 
-export const Slot = (_props: Props): JSX.Element => {
+export const Slot = (props: Props): JSX.Element => {
   return (
-    <div id="slot" style={styles.slot}>
+    <div id="slot" style={styles.slot} onClick={() => null}>
       <div id="hole-punch" style={styles.holePunch}>
         {/* row-{_props.row}, col-{_props.col} */}
-        <Chip color="yellow" />
+        <Chip color={props?.chip} />
       </div>
     </div>
   )

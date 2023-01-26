@@ -1,5 +1,10 @@
+export enum ChipColors {
+  RED = 'red',
+  YELLOW = 'yellow',
+}
+
 interface Props {
-  color?: 'red' | 'yellow'
+  color?: ChipColors
 }
 
 export const Chip = (props: Props): JSX.Element => (
@@ -13,5 +18,5 @@ export const Chip = (props: Props): JSX.Element => (
       backgroundColor: props.color ?? '#fafafa',
       borderRadius: '50%',
     }}
-  ></div>
+  />
 )
