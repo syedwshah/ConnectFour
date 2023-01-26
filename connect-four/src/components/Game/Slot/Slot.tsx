@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { GameContext } from '../../providers'
 
-import { Chip, ChipColors } from '../Chip'
+import { ChipColors, Chip } from './Chip'
 
 interface Props {
   row?: number
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export const Slot = (props: Props): JSX.Element => {
+  const gameContext = useContext(GameContext)
+
   return (
     <div id="slot" style={styles.slot} onClick={() => null}>
       <div id="hole-punch" style={styles.holePunch}>

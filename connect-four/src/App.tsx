@@ -1,5 +1,5 @@
 import { Game } from './components'
-import { GameProvider } from './providers/GameProvider'
+import { GameProvider } from './components/providers'
 
 const App = (): JSX.Element => (
   <GameProvider>

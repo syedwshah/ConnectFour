@@ -1,3 +1,3 @@
-export * from './Slot'
-export * from './Chip'
+export * from './Game/Slot'
+export * from './Game/Slot/Chip'
 export * from './Game'

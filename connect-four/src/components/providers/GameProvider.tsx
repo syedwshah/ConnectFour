@@ -35,8 +35,6 @@ const GameProvider = ({ children }: Props): JSX.Element => {
   return <Provider value={{ game: defaultGame, newGame }}>{children}</Provider>
 }
 
-export { GameContext, GameProvider }
-
 type Position = {
   row: number[]
   col: number[]
@@ -46,3 +44,5 @@ interface Game {
   playerOne: Position
   playerTwo: Position
 }
+
+export { GameContext, GameProvider }

@@ -1,6 +1,5 @@
 import React from 'react'
-
-import { Slot } from '../Slot'
+import { Slot } from './Slot'
 
 export const Game = (): JSX.Element => {
   return (
