@@ -19,8 +19,9 @@ export const Slot = (props: Props): JSX.Element => {
     (playerTwo.row.includes(row) && playerTwo.col.includes(col))
 
   const handleClick = () => {
-    gameContext.playerMove?.(props.row, props.col)
     setChip(!(gameContext.turn % 2) ? ChipColors.YELLOW : ChipColors.RED)
+
+    gameContext.playerMove?.(props.row, props.col)
   }
 
   return (

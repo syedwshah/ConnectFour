@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback, useState } from 'react'
+import { createContext, ReactNode, useCallback, useMemo, useState } from 'react'
 
 const defaultGame: Game = {
   playerOne: { row: [], col: [] },
@@ -64,10 +64,15 @@ const GameProvider = ({ children }: Props): JSX.Element => {
         setTurn(turn + 1)
       }
     },
-    [game, turn, setTurn, setGame]
+    [game, setGame, turn, setTurn]
   )
 
-  return <Provider value={{ game, playerMove, turn }}>{children}</Provider>
+  const contextValue = useMemo(
+    () => ({ game, playerMove, turn }),
+    [game, playerMove, turn]
+  )
+
+  return <Provider value={contextValue}>{children}</Provider>
 }
 
 interface Position {
