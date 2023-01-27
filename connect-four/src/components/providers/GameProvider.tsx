@@ -1,15 +1,16 @@
 import { createContext, ReactNode, useCallback, useMemo, useState } from 'react'
+import { ChipColors } from '../Game/Slot'
 
 const defaultGame: Game = {
-  playerOne: { row: [], col: [] },
-  playerTwo: { row: [], col: [] },
+  playerOne: [],
+  playerTwo: [],
 }
 
 export interface GameContextType {
   game: Game
   turn: number
   newGame?: () => void
-  playerMove?: (newRow: number, newCol: number) => void
+  playerMove?: (newRow: number, newCol: number) => ChipColors
 }
 
 const GameContext = createContext<GameContextType>({
@@ -32,39 +33,29 @@ const GameProvider = ({ children }: Props): JSX.Element => {
 
   const playerMove = useCallback(
     (newRow: number, newCol: number) => {
-      const { playerOne, playerTwo } = game
-
       // TODO(1): Chips should fall from column down to existing chip column
       // TODO(2): Prevent chip being placeed on existing Point
 
-      const slotTaken =
-        (playerOne.row.includes(newRow) && playerOne.col.includes(newCol)) ||
-        (playerTwo.row.includes(newRow) && playerTwo.col.includes(newCol))
-
       const player = !(turn % 2) ? 'playerOne' : 'playerTwo'
+      const chip = !(turn % 2) ? ChipColors.YELLOW : ChipColors.RED
 
-      if (!slotTaken) {
-        setGame({
-          ...game,
-          [player]: {
-            row: [...game[player].row, newRow],
-            col: [...game[player].col, newCol],
+      setGame({
+        ...game,
+        [player]: [
+          ...game[player],
+          {
+            row: newRow,
+            col: newCol,
+            chip: chip,
           },
-        })
-        setTurn(turn + 1)
-      } else {
-        //TODO: make sure there is still a row available
-        setGame({
-          ...game,
-          [player]: {
-            row: [...game[player].row, newRow + 1],
-            col: [...game[player].col, newCol],
-          },
-        })
-        setTurn(turn + 1)
-      }
+        ],
+      })
+
+      setTurn(turn + 1)
+
+      return chip
     },
-    [game, setGame, turn, setTurn]
+    [game, turn]
   )
 
   const contextValue = useMemo(
@@ -75,14 +66,15 @@ const GameProvider = ({ children }: Props): JSX.Element => {
   return <Provider value={contextValue}>{children}</Provider>
 }
 
-interface Position {
-  row: number[]
-  col: number[]
+type DroppedChip = {
+  row: number
+  col: number
+  chip?: ChipColors
 }
 
 type Game = {
-  playerOne: Position
-  playerTwo: Position
+  playerOne: DroppedChip[]
+  playerTwo: DroppedChip[]
 }
 
 export { GameContext, GameProvider }

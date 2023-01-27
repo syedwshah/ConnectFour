@@ -1,33 +1,25 @@
 import React, { useContext, useState } from 'react'
 import { GameContext } from '../../providers'
-
 import { ChipColors, Chip } from './Chip'
 
 interface Props {
-  row: number
-  col: number
+  // row: number
+  // col: number
+  color?: ChipColors
+  onClick?: () => ChipColors | undefined
 }
 
 export const Slot = (props: Props): JSX.Element => {
+  // if its position is in the data, use that color
   const gameContext = useContext(GameContext)
-  const [chip, setChip] = useState<ChipColors | undefined>()
+  const [color, setColor] = useState<ChipColors | undefined>()
 
-  const { playerOne, playerTwo } = gameContext.game
-
-  const filled = (row: number, col: number): boolean =>
-    (playerOne.row.includes(row) && playerOne.col.includes(col)) ||
-    (playerTwo.row.includes(row) && playerTwo.col.includes(col))
-
-  const handleClick = () => {
-    setChip(!(gameContext.turn % 2) ? ChipColors.YELLOW : ChipColors.RED)
-
-    gameContext.playerMove?.(props.row, props.col)
-  }
+  const _turn = gameContext.turn
 
   return (
-    <div id="slot" style={styles.slot} onClick={handleClick}>
+    <div id="slot" style={styles.slot} onClick={() => setColor(props.onClick)}>
       <div id="hole-punch" style={styles.holePunch}>
-        <Chip color={filled(props.row, props.col) ? chip : undefined} />
+        <Chip color={color} />
       </div>
     </div>
   )
@@ -40,6 +32,7 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: 'cyan',
     height: 64,
     width: 64,
+    padding: 2,
   },
   holePunch: {
     display: 'flex',
