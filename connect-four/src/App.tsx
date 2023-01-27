@@ -1,7 +1,10 @@
-import React from 'react'
+import { Game } from './components'
+import { GameProvider } from './components/providers'
 
-function App() {
-  return <div></div>
-}
+const App = (): JSX.Element => (
+  <GameProvider>
+    <Game />
+  </GameProvider>
+)
 
 export default App
