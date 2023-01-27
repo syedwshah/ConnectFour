@@ -66,7 +66,7 @@ export const Game = (): JSX.Element => {
 
     /// diagonal
     for (let r = 3; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
+      for (let c = 0; c < COLS - 3; c++) {
         const color: string = board[kvHelper(r, c)]
         if (
           color &&

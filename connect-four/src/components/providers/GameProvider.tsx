@@ -25,7 +25,6 @@ const defaultGameMeta: GameMeta = {
 export interface GameContextType {
   game: Game
   gameMeta: GameMeta
-  currentColor?: ChipColors
   newGame?: () => void
   playerMove?: (newRow: number, newCol: number) => void
 }
