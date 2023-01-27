@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useMemo, useState } from 'react'
 import { ChipColors } from '../Game/Slot'
 
+export const [ROWS, COLS] = [6, 7]
 const defaultGame: Game = {
   playerOne: [],
   playerTwo: [],
@@ -9,6 +10,15 @@ const defaultGame: Game = {
 const defaultGameMeta: GameMeta = {
   history: {},
   turn: 0,
+  currCols: {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+  },
 }
 
 export interface GameContextType {
@@ -17,6 +27,7 @@ export interface GameContextType {
   currentColor?: ChipColors
   newGame?: () => void
   playerMove?: (newRow: number, newCol: number) => void
+  // rigidBody?: (newCol: number) => void
 }
 
 const GameContext = createContext<GameContextType>({
@@ -66,15 +77,42 @@ const GameProvider = ({ children }: Props): JSX.Element => {
           [historyKeyHelper(newRow, newCol)]: chip,
         },
         turn: turn + 1,
+        // update how cols stack
+        currCols: {
+          ...gameMeta.currCols,
+          ...{
+            [newCol]: gameMeta.currCols[newCol] + 1,
+          },
+        },
       })
     },
     [game, gameMeta]
   )
 
+  // needs to be its own set state, or deleted
+  // const rigidBody = useCallback(
+  //   (col: number) => {
+  //     setGameMeta({
+  //       ...gameMeta,
+  //       currCols: {
+  //         ...gameMeta.currCols,
+  //         ...{
+  //           [col]: gameMeta.currCols[col] + 1,
+  //         },
+  //       },
+  //     })
+  //   },
+  //   [gameMeta]
+  // )
+
   const contextValue = useMemo(
     () => ({ game, playerMove, gameMeta }),
     [game, playerMove, gameMeta]
   )
+  // const contextValue = useMemo(
+  //   () => ({ game, playerMove, gameMeta, rigidBody }),
+  //   [game, playerMove, gameMeta, rigidBody]
+  // )
 
   return <Provider value={contextValue}>{children}</Provider>
 }
@@ -93,13 +131,14 @@ type Game = {
 type GameMeta = {
   history: History
   turn: number
+  currCols: Record<number, number>
 }
 
 // History is unideal type safety, since anything could go into the key of type string
 // This is easiest way to obtain colors properly.
 // Data is kept on type Game to maintain type safety.
 
-// We may completely remove type Game and keep only GameMeta since only 'history' is needed
+// We may remove type Game and keep only GameMeta based on coding preferences
 type History = Record<string, ChipColors>
 
 export const historyKeyHelper = (r: number, c: number) => `${r},${c}`
