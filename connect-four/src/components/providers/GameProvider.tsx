@@ -95,9 +95,11 @@ type GameMeta = {
   turn: number
 }
 
+// History is unideal type safety, since anything could go into the key of type string
+// This is easiest way to obtain colors properly.
 // Data is kept on type Game to maintain type safety.
-// We could completely remove type Game and keep only GameMeta since
-// History is unideal type safety, but it is easiest way to obtain colors properly
+
+// We may completely remove type Game and keep only GameMeta since only 'history' is needed
 type History = Record<string, ChipColors>
 
 export const historyKeyHelper = (r: number, c: number) => `${r},${c}`
