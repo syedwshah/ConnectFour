@@ -1,21 +1,38 @@
 import { createContext, ReactNode, useCallback, useMemo, useState } from 'react'
 import { ChipColors } from '../Game/Slot'
 
+export const [ROWS, COLS] = [6, 7]
+
 const defaultGame: Game = {
   playerOne: [],
   playerTwo: [],
 }
 
+const defaultGameMeta: GameMeta = {
+  history: {},
+  turn: 0,
+  currCols: {
+    0: ROWS - 1,
+    1: ROWS - 1,
+    2: ROWS - 1,
+    3: ROWS - 1,
+    4: ROWS - 1,
+    5: ROWS - 1,
+    6: ROWS - 1,
+  },
+}
+
 export interface GameContextType {
   game: Game
-  turn: number
+  gameMeta: GameMeta
+  currentColor?: ChipColors
   newGame?: () => void
-  playerMove?: (newRow: number, newCol: number) => ChipColors
+  playerMove?: (newRow: number, newCol: number) => void
 }
 
 const GameContext = createContext<GameContextType>({
   game: defaultGame,
-  turn: 0,
+  gameMeta: defaultGameMeta,
 })
 
 interface Props {
@@ -25,16 +42,18 @@ interface Props {
 const GameProvider = ({ children }: Props): JSX.Element => {
   const { Provider } = GameContext
 
-  const [turn, setTurn] = useState(0)
+  const [gameMeta, setGameMeta] = useState<GameMeta>(defaultGameMeta)
   const [game, setGame] = useState<Game>(defaultGame)
 
   // TODO: newGame
-  // const newGame = useCallback(() => defaultGame, [])
+  const newGame = useCallback(() => {
+    setGame(defaultGame)
+    setGameMeta(defaultGameMeta)
+  }, [])
 
   const playerMove = useCallback(
     (newRow: number, newCol: number) => {
-      // TODO(1): Chips should fall from column down to existing chip column
-      // TODO(2): Prevent chip being placeed on existing Point
+      const turn = gameMeta.turn
 
       const player = !(turn % 2) ? 'playerOne' : 'playerTwo'
       const chip = !(turn % 2) ? ChipColors.YELLOW : ChipColors.RED
@@ -51,16 +70,28 @@ const GameProvider = ({ children }: Props): JSX.Element => {
         ],
       })
 
-      setTurn(turn + 1)
+      setGameMeta({
+        ...gameMeta,
+        history: {
+          ...gameMeta.history,
+          [kvHelper(newRow, newCol)]: chip,
+        },
+        turn: turn + 1,
 
-      return chip
+        currCols: {
+          ...gameMeta.currCols,
+          ...{
+            [newCol]: gameMeta.currCols[newCol] - 1,
+          },
+        },
+      })
     },
-    [game, turn]
+    [game, gameMeta]
   )
 
   const contextValue = useMemo(
-    () => ({ game, playerMove, turn }),
-    [game, playerMove, turn]
+    () => ({ game, playerMove, gameMeta, newGame }),
+    [game, playerMove, gameMeta, newGame]
   )
 
   return <Provider value={contextValue}>{children}</Provider>
@@ -76,5 +107,20 @@ type Game = {
   playerOne: DroppedChip[]
   playerTwo: DroppedChip[]
 }
+
+type GameMeta = {
+  history: History
+  turn: number
+  currCols: Record<number, number>
+}
+
+// History is unideal type safety, since anything could go into the key of type string
+// This is easiest way to obtain colors properly.
+// Data is kept on type Game to maintain type safety.
+
+// We may remove type Game and keep only GameMeta based on coding preferences
+type History = Record<string, ChipColors>
+
+export const kvHelper = (r: number, c: number) => `${r},${c}`
 
 export { GameContext, GameProvider }
