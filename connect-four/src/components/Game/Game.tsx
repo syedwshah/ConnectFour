@@ -1,17 +1,26 @@
 import { CSSProperties, useContext } from 'react'
-import { GameContext } from '../providers'
+import { GameContext, historyKeyHelper } from '../providers'
 
 import { Slot } from './Slot'
 
 export const Game = (): JSX.Element => {
   const gameContext = useContext(GameContext)
 
+  const history = gameContext.gameMeta.history
+
   // const turn = gameContext.turn
 
   // const color = gameContext.game[!(turn % 2) ? 'playerOne' : 'playerTwo']
   const handleClick = (row: number, col: number) => {
     // if data exists don't run playerMove
-    return gameContext.playerMove?.(row, col)
+
+    const dataExists = history[historyKeyHelper(row, col)]
+
+    if (!dataExists) {
+      return gameContext.playerMove?.(row, col)
+    } else {
+      gameContext.playerMove?.(row + 1, col)
+    }
   }
 
   return (
@@ -22,10 +31,12 @@ export const Game = (): JSX.Element => {
             {[...Array(7)].map((_, colIndex) => (
               <div key={`${rowIndex}-${colIndex}`}>
                 <Slot
-                  // row={rowIndex}
-                  // col={colIndex}
-                  // color={gameContext.game.playerOne[turn].chip}
                   onClick={() => handleClick(rowIndex, colIndex)}
+                  color={
+                    gameContext.gameMeta.history[
+                      historyKeyHelper(rowIndex, colIndex)
+                    ]
+                  }
                 />
               </div>
             ))}

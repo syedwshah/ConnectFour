@@ -1,25 +1,23 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { GameContext } from '../../providers'
 import { ChipColors, Chip } from './Chip'
 
 interface Props {
-  // row: number
-  // col: number
   color?: ChipColors
-  onClick?: () => ChipColors | undefined
+  onClick?: () => void
 }
 
 export const Slot = (props: Props): JSX.Element => {
   // if its position is in the data, use that color
   const gameContext = useContext(GameContext)
-  const [color, setColor] = useState<ChipColors | undefined>()
+  // const [color, setColor] = useState<ChipColors | undefined>()
 
-  const _turn = gameContext.turn
+  const _turn = gameContext.gameMeta.turn
 
   return (
-    <div id="slot" style={styles.slot} onClick={() => setColor(props.onClick)}>
+    <div id="slot" style={styles.slot} onClick={props.onClick}>
       <div id="hole-punch" style={styles.holePunch}>
-        <Chip color={color} />
+        <Chip color={props.color} />
       </div>
     </div>
   )
