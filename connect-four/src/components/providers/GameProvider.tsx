@@ -2,6 +2,7 @@ import { createContext, ReactNode, useCallback, useMemo, useState } from 'react'
 import { ChipColors } from '../Game/Slot'
 
 export const [ROWS, COLS] = [6, 7]
+
 const defaultGame: Game = {
   playerOne: [],
   playerTwo: [],
@@ -11,13 +12,13 @@ const defaultGameMeta: GameMeta = {
   history: {},
   turn: 0,
   currCols: {
-    0: 0,
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
+    0: ROWS - 1,
+    1: ROWS - 1,
+    2: ROWS - 1,
+    3: ROWS - 1,
+    4: ROWS - 1,
+    5: ROWS - 1,
+    6: ROWS - 1,
   },
 }
 
@@ -27,7 +28,6 @@ export interface GameContextType {
   currentColor?: ChipColors
   newGame?: () => void
   playerMove?: (newRow: number, newCol: number) => void
-  // rigidBody?: (newCol: number) => void
 }
 
 const GameContext = createContext<GameContextType>({
@@ -46,13 +46,13 @@ const GameProvider = ({ children }: Props): JSX.Element => {
   const [game, setGame] = useState<Game>(defaultGame)
 
   // TODO: newGame
-  // const newGame = useCallback(() => defaultGame, [])
+  const newGame = useCallback(() => {
+    setGame(defaultGame)
+    setGameMeta(defaultGameMeta)
+  }, [])
 
   const playerMove = useCallback(
     (newRow: number, newCol: number) => {
-      // TODO(1): Chips should fall from column down to existing chip column
-      // TODO(2): Prevent chip being placeed on existing Point
-
       const turn = gameMeta.turn
 
       const player = !(turn % 2) ? 'playerOne' : 'playerTwo'
@@ -74,14 +74,14 @@ const GameProvider = ({ children }: Props): JSX.Element => {
         ...gameMeta,
         history: {
           ...gameMeta.history,
-          [historyKeyHelper(newRow, newCol)]: chip,
+          [kvHelper(newRow, newCol)]: chip,
         },
         turn: turn + 1,
-        // update how cols stack
+
         currCols: {
           ...gameMeta.currCols,
           ...{
-            [newCol]: gameMeta.currCols[newCol] + 1,
+            [newCol]: gameMeta.currCols[newCol] - 1,
           },
         },
       })
@@ -89,30 +89,10 @@ const GameProvider = ({ children }: Props): JSX.Element => {
     [game, gameMeta]
   )
 
-  // needs to be its own set state, or deleted
-  // const rigidBody = useCallback(
-  //   (col: number) => {
-  //     setGameMeta({
-  //       ...gameMeta,
-  //       currCols: {
-  //         ...gameMeta.currCols,
-  //         ...{
-  //           [col]: gameMeta.currCols[col] + 1,
-  //         },
-  //       },
-  //     })
-  //   },
-  //   [gameMeta]
-  // )
-
   const contextValue = useMemo(
-    () => ({ game, playerMove, gameMeta }),
-    [game, playerMove, gameMeta]
+    () => ({ game, playerMove, gameMeta, newGame }),
+    [game, playerMove, gameMeta, newGame]
   )
-  // const contextValue = useMemo(
-  //   () => ({ game, playerMove, gameMeta, rigidBody }),
-  //   [game, playerMove, gameMeta, rigidBody]
-  // )
 
   return <Provider value={contextValue}>{children}</Provider>
 }
@@ -141,6 +121,6 @@ type GameMeta = {
 // We may remove type Game and keep only GameMeta based on coding preferences
 type History = Record<string, ChipColors>
 
-export const historyKeyHelper = (r: number, c: number) => `${r},${c}`
+export const kvHelper = (r: number, c: number) => `${r},${c}`
 
 export { GameContext, GameProvider }
